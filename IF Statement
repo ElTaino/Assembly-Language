@@ -1,0 +1,44 @@
+.intel_syntax noprefix
+.global _start
+.text
+_start:
+
+mov rax, 3
+
+;# IF <condition>
+;# compare (Does all operations)
+cmp rax, 4
+;# jump if not equal
+;# probably other commands
+jne exit
+
+;# body
+print:
+ mov rax, 1
+ mov rdi, 1
+ lea rsi, [s1]
+ lea rdx, [s1_len]
+ syscall
+
+;# end if 
+exit:
+ mov rax, 60
+ xor rdi, rdi
+ syscall
+
+.data
+ s1: .ascii "rax is like 3!"
+ s1_len = . - s1
+
+;# SYSCALL(WRITE, TERMINAL, addr, len);
+;# WRITE(TERMINAL, addr, len);
+
+;# system call code: RAX
+;# Parameter Order:
+;# RDI
+;# RSI
+;# RDX
+;# RCX
+;# R8
+;# R9
+
