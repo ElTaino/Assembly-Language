@@ -1,0 +1,76 @@
+.intel_syntax noprefix
+.global _start
+.text
+_start:
+
+lea r15, [callstack]
+lea rsp, [callstack]
+lea rax, [resume_here]
+mov [r15], rax
+add r15, 8
+
+jmp print_hello
+
+resume_here:
+ jmp exit
+
+exit:
+ mov rax, 60
+ xor rdi, rdi
+ syscall
+
+print_hello:
+;# We want to WRITE to the terminal STANDARD OUT
+ mov rax, 1 ;# syscall WRITE
+ mov rdi, 1 ;# TERMINAL, STD OUT
+ lea rsi, [hello]
+ lea rdx, [hello_len]
+ syscall
+ 
+ lea rax, [resume_hello]
+ mov [r15], rax
+ add r15, 8
+ jmp print_goodbye
+
+resume_hello:
+ sub r15, 8
+ mov rax, [r15]
+ jmp rax
+
+print_goodbye:
+ mov rax, 1
+ mov rdi, 1
+ lea rsi, [goodbye]
+ lea rdx, [goodbye_len]
+ syscall
+ 
+ sub r15, 8
+ mov rax, [r15]
+ jmp rax
+
+
+.data
+callstack: .skip 4096, 0x0 ;# 500 * 8 = 4000 (4096) = 4KB RAM()
+
+hello: .ascii "Helllllo my nigga!\n"
+;# "." position we're at now
+;# "-" subtract
+;# hellostring memory address
+hello_len = . - hello
+
+goodbye: .ascii "Peace out my nigga\n"
+goodbye_len = . - goodbye
+
+ 
+;# SYSCALL(WRITE, TERMINAL, addr, len);
+;# WRITE(TERMINAL, addr, len);
+
+;# system call code: RAX
+;# Parameter Order:
+;# RDI
+;# RSI
+;# RDX
+;# RCX
+;# R8
+;# R9
+
