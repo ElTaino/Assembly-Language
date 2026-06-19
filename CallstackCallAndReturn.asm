@@ -1,0 +1,58 @@
+.intel_syntax noprefix
+.global _start
+.text
+_start:
+
+call print_hello
+jmp exit
+
+exit:
+ mov rax, 60
+ xor rdi, rdi
+ syscall
+
+print_hello:
+;# We want to WRITE to the terminal STANDARD OUT
+ mov rax, 1 ;# syscall WRITE
+ mov rdi, 1 ;# TERMINAL, STD OUT
+ lea rsi, [hello]
+ lea rdx, [hello_len]
+ syscall
+ 
+ call print_goodbye
+ nop
+ ret
+
+print_goodbye:
+ mov rax, 1
+ mov rdi, 1
+ lea rsi, [goodbye]
+ lea rdx, [goodbye_len]
+ syscall
+ 
+ ret
+
+
+.data
+
+hello: .ascii "Helllllo my nigga!\n"
+;# "." position we're at now
+;# "-" subtract
+;# hellostring memory address
+hello_len = . - hello
+
+goodbye: .ascii "Peace out my nigga\n"
+goodbye_len = . - goodbye
+
+ 
+;# SYSCALL(WRITE, TERMINAL, addr, len);
+;# WRITE(TERMINAL, addr, len);
+
+;# system call code: RAX
+;# Parameter Order:
+;# RDI
+;# RSI
+;# RDX
+;# RCX
+;# R8
+;# R9
