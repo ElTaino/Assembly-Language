@@ -1,0 +1,66 @@
+.intel_syntax noprefix
+.global _start
+.text
+_start:
+
+lea rdi, [s2]
+call _strlen
+
+exit:
+ int3
+ mov rax, 60
+ xor rdi, rdi
+ syscall
+
+
+
+_strlen: 
+mov rax, rdi
+
+compare:
+mov bl, [rax]
+cmp bl, 0x00
+je _strlen_exit
+inc rcx
+inc rax
+jmp compare
+
+_strlen_exit:
+mov rax, rcx
+int3
+ret
+
+print:
+ mov rax, 1
+ mov rdi, 1
+ lea rsi, [s1]
+ lea rdx, [s1_len]
+ syscall
+ jmp exit
+
+
+;# al
+
+.data
+;# \0 is the null terminator
+;#.. C auto does this
+;# asciz will auto add null term
+s1: .asciz "First!"
+s2: .asciz "Second!"
+s3: .asciz "Third"
+
+s1_len = . - s1
+
+;# can use .string too
+
+;# SYSCALL(WRITE, TERMINAL, addr, len);
+;# WRITE(TERMINAL, addr, len);
+
+;# system call code: RAX
+;# Parameter Order:
+;# RDI
+;# RSI
+;# RDX
+;# RCX
+;# R8
+;# R9
