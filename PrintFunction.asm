@@ -1,0 +1,70 @@
+.intel_syntax noprefix
+.global _start
+.text
+
+_start:
+;# pretty much print(s1);
+lea rdi, [s2]
+call _print
+lea rdi, [s1]
+call _print
+lea rdi, [s3]
+call _print
+lea rdi, [s4]
+call _print
+
+int3
+
+_exit:
+mov rax, 60
+xor rdi, rdi
+syscall
+
+_print:
+;#lea rdi, [s1] moving to parameter
+push rdi
+call _strlen
+pop rdi
+int3
+mov rdx, rax
+mov rsi, rdi
+mov rax, 1 ;# write
+mov rdi, 1 ;# STD-OUT / Terminal
+;# rdx = length
+syscall
+ret
+
+_strlen:
+mov rax, rdi
+xor rcx, rcx
+
+loop:
+mov bl, [rax]
+cmp bl, 0
+je _strlen_exit
+inc rcx
+inc rax
+jmp loop
+
+_strlen_exit:
+xor rdi, rdi
+mov rax, rcx
+int3
+ret
+
+
+
+.data
+s1: .asciz "Ayo my g\n"
+s2: .asciz "Flabbergaster my nigga\n"
+s3: .asciz "Time to learn assembly\n"
+s4: .asciz "Or learn martial arts\n"
+
+;# system call code: RAX
+;# Parameter Order:
+;# RDI
+;# RSI
+;# RDX
+;# RCX
+;# R8
+;# R9
